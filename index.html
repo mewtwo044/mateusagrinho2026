@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexão Agro: Equilíbrio e Bem-Estar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef5ed;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border-top: 8px solid #27ae60;
+        }
+        h1 {
+            color: #27ae60;
+            margin-top: 0;
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .stat {
+            font-weight: bold;
+        }
+        .stat-val {
+            display: block;
+            font-size: 24px;
+            color: #2980b9;
+        }
+        #val-saude { color: #e74c3c; }
+        #val-fazenda { color: #27ae60; }
+        #val-financas { color: #f39c12; }
 
+        .event-box {
+            min-height: 120px;
+            margin: 20px 0;
+            font-size: 18px;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #219653;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #restart-btn {
+            background-color: #2980b9;
+            display: none;
+            margin: 20px auto 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Conexão Agro</h1>
+    <p>Gerencie sua fazenda, mas lembre-se: <strong>sua saúde e bem-estar vêm em primeiro lugar!</strong></p>
+    
+    <div class="stats-container">
+        <div class="stat">Saúde Mental/Física <span id="val-saude" class="stat-val">100</span></div>
+        <div class="stat">Sustentabilidade <span id="val-fazenda" class="stat-val">100</span></div>
+        <div class="stat">Finanças <span id="val-financas" class="stat-val">100</span></div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee;">
+
+    <div id="event-text" class="event-box">
+        Carregando o dia...
+    </div>
+
+    <div class="btn-container">
+        <button id="btn-opcao1" onclick="escolher(1)">Opção 1</button>
+        <button id="btn-opcao2" onclick="escolher(2)">Opção 2</button>
+        <button id="restart-btn" onclick="iniciarJogo()">Jogar Novamente</button>
+    </div>
+</div>
+
+<script>
+    // Atributos do jogador
+    let saude, fazenda, financas, rodada;
+
+    // Banco de eventos/dilemas do jogo
+    const eventos = [
+        {
+            texto: "A colheita está atrasada devido às chuvas e o estresse está aumentando. O que você faz?",
+            opcoes: [
+                { texto: "Trabalhar 14 horas seguidas para compensar.", saude: -25, fazenda: +10, financas: +15 },
+                { texto: "Respeitar seus limites, pausar e planejar com calma.", saude: +15, fazenda: -5, financas: -5 }
+            ]
+        },
+        {
+            texto: "Surgiu uma nova técnica de manejo regenerativo que melhora a saúde do solo a longo prazo, mas exige investimento inicial.",
+            opcoes: [
+                { texto: "Adotar a técnica para cuidar da terra.", saude: +5, fazenda: +25, financas: -20 },
+                { texto: "Manter o convencional para economizar agora.", saude: 0, fazenda: -15, financas: +10 }
+            ]
+        },
+        {
+            texto: "Vizinhos o convidaram para a festa comunitária de cooperativismo rural neste final de semana.",
+            opcoes: [
+                { texto: "Ir ao evento para descontrair e conversar com amigos.", saude: +20, fazenda: 0, financas: -5 },
+                { texto: "Ficar revisando as planilhas financeiras sozinho.", saude: -15, fazenda: 0, financas: +10 }
+            ]
+        },
+        {
+            texto: "Uma praga pontual apareceu na lavoura. Como vai lidar com isso?",
+            opcoes: [
+                { texto: "Aplicar defensivos pesados sem proteção para resolver rápido.", saude: -20, fazenda: -15, financas: +15 },
+                { texto: "Usar manejo integrado de pragas, mesmo que demore mais.", saude: +10, fazenda: +15, financas: -10 }
+            ]
+        },
+        {
+            texto: "Faz semanas que você não tira um dia de descanso completo. Seu corpo está cobrando o preço.",
+            opcoes: [
+                { texto: "Ignorar as dores e continuar o trabalho pesado.", saude: -30, fazenda: +5, financas: +10 },
+                { texto: "Tirar o domingo para descansar e ver a família.", saude: +25, fazenda: -5, financas: 0 }
+            ]
+        }
+    ];
+
+    let eventosAtuais = [];
+
+    function iniciarJogo() {
+        saude = 70;
+        fazenda = 70;
+        financas = 70;
+        rodada = 0;
+        eventosAtuais = [...eventos].sort(() => Math.random() - 0.5); // Embaralha os eventos
+        
+        document.getElementById("restart-btn").style.display = "none";
+        document.getElementById("btn-opcao1").style.display = "block";
+        document.getElementById("btn-opcao2").style.display = "block";
+        
+        atualizarInterface();
+        proximoEvento();
+    }
+
+    function atualizarInterface() {
+        // Limita os valores entre 0 e 100
+        saude = Math.max(0, Math.min(100, saude));
+        fazenda = Math.max(0, Math.min(100, fazenda));
+        financas = Math.max(0, Math.min(100, financas));
+
+        document.getElementById("val-saude").innerText = saude;
+        document.getElementById("val-fazenda").innerText = fazenda;
+        document.getElementById("val-financas").innerText = financas;
+    }
+
+    function proximoEvento() {
+        if (saude <= 0) {
+            finalizarJogo("Fim de jogo! Você negligenciou sua saúde física e mental e precisou ser hospitalizado por esgotamento (Burnout). Lembre-se: o agro não para, mas você precisa pausar.");
+            return;
+        }
+        if (fazenda <= 0) {
+            finalizarJogo("Fim de jogo! A saúde da sua propriedade ruiu. O solo ficou infértil e os recursos escassos por falta de práticas sustentáveis.");
+            return;
+        }
+        if (financas <= 0) {
+            finalizarJogo("Fim de jogo! Suas finanças zeraram. Sem planejamento econômico, a fazenda acabou quebrando.");
+            return;
+        }
+
+        if (rodada >= eventosAtuais.length) {
+            finalizarJogo("Parabéns! Você conseguiu passar pela temporada mantendo o equilíbrio entre sua saúde, sua terra e suas finanças. Você é um produtor consciente!");
+            return;
+        }
+
+        let ev = eventosAtuais[rodada];
+        document.getElementById("event-text").innerText = ev.texto;
+        document.getElementById("btn-opcao1").innerText = ev.opcoes[0].texto;
+        document.getElementById("btn-opcao2").innerText = ev.opcoes[1].texto;
+    }
+
+    function escolher(opcao) {
+        let ev = eventosAtuais[rodada];
+        let escolha = ev.opcoes[opcao - 1];
+
+        saude += escolha.saude;
+        fazenda += escolha.fazenda;
+        financas += escolha.financas;
+
+        atualizarInterface();
+        rodada++;
+        
+        // Pequena pausa para o jogador ver a mudança nos pontos antes do próximo evento
+        setTimeout(proximoEvento, 400);
+    }
+
+    function finalizarJogo(mensagem) {
+        document.getElementById("event-text").innerHTML = "<strong>" + mensagem + "</strong>";
+        document.getElementById("btn-opcao1").style.display = "none";
+        document.getElementById("btn-opcao2").style.display = "none";
+        document.
