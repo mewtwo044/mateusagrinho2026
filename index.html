@@ -3,242 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Fazenda Agro</title>
+    <title>Mini Fazenda: O Jogo de Agricultura</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #e3f2fd;
+            color: #333;
+            text-align: center;
             margin: 0;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
-
         h1 {
             color: #2e7d32;
-            margin-bottom: 10px;
         }
-
-        #painel {
-            background-color: #fff;
-            padding: 15px 25px;
+        .painel {
+            background: white;
+            padding: 15px;
             border-radius: 10px;
+            display: inline-block;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-            display: flex;
-            gap: 20px;
-            font-size: 18px;
+        }
+        .moedas {
+            font-size: 24px;
             font-weight: bold;
+            color: #f57c00;
         }
-
-        .moedas { color: #f57c00; }
-        .estoque { color: #1565c0; }
-
-        #controles {
-            margin-bottom: 20px;
+        .fazenda {
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
-
-        .btn {
-            padding: 10px 20px;
-            font-size: 16px;
+        .canteiro {
+            background: #8d6e63;
+            border: 4px solid #5d4037;
+            border-radius: 15px;
+            width: 150px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+        .status-planta {
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .visual-planta {
+            font-size: 50px;
+            transition: transform 0.2s;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
             border: none;
+            padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .btn-plantar { background-color: #4caf50; color: white; }
-        .btn-plantar:hover { background-color: #388e3c; }
-        .btn-regar { background-color: #2196f3; color: white; }
-        .btn-regar:hover { background-color: #1976d2; }
-        .btn-colher { background-color: #ff9800; color: white; }
-        .btn-colher:hover { background-color: #f57c00; }
-        .btn-vender { background-color: #9c27b0; color: white; }
-        .btn-vender:hover { background-color: #7b1fa2; }
-
-        #fazenda {
-            display: grid;
-            grid-template-columns: repeat(3, 120px);
-            gap: 15px;
-            background-color: #8d6e63;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-        .lote {
-            width: 120px;
-            height: 120px;
-            background-color: #6d4c41;
-            border: 3px solid #5d4037;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: white;
             font-size: 14px;
-            text-align: center;
-            user-select: none;
-            transition: transform 0.1s;
+            width: 100%;
         }
-
-        .lote:active {
-            transform: scale(0.95);
+        button:hover {
+            background-color: #45a049;
         }
-
-        .lote.selecionado {
-            border-color: #fff;
-            box-shadow: 0 0 10px #fff;
-        }
-
-        .emoji {
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-
-        .status-texto {
-            font-size: 12px;
-            background-color: rgba(0,0,0,0.5);
-            padding: 2px 6px;
-            border-radius: 4px;
+        button:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <h1>🚜 Agro Clicker: A Fazendinha</h1>
-
-    <div id="painel">
-        <span class="moedas">💰 Moedas: $<span id="txt-moedas">10</span></span>
-        <span class="estoque">🌾 Estoque: <span id="txt-estoque">0</span></span>
+    <h1>🚜 Minha Fazendinha HTML 🌾</h1>
+    
+    <div class="painel">
+        <div class="moedas">💰 Moedas: <span id="contador-moedas">10</span></div>
+        <p>Plante, espere crescer, colha e venda para ganhar mais moedas!</p>
     </div>
 
-    <div id="controles">
-        <button class="btn btn-plantar" onclick="setAcao('plantar')">🌱 Plantar (-$2)</button>
-        <button class="btn btn-regar" onclick="setAcao('regar')">💧 Regar</button>
-        <button class="btn btn-colher" onclick="setAcao('colher')">🧺 Colher</button>
-        <button class="btn btn-vender" onclick="venderTudo()">💰 Vender Tudo (+$5 cada)</button>
-    </div>
-
-    <p id="instrucao">Selecione uma ação acima e clique em um lote de terra!</p>
-
-    <div id="fazenda">
+    <div class="fazenda">
+        <div class="canteiro" id="canteiro-1">
+            <span class="status-planta" id="status-1">Terra Vazia</span>
+            <div class="visual-planta" id="visual-1">🟫</div>
+            <button id="btn-1" onclick="acaoCanteiro(1)">Plantar Tomate (Custa 5)</button>
         </div>
 
+        <div class="canteiro" id="canteiro-2">
+            <span class="status-planta" id="status-2">Terra Vazia</span>
+            <div class="visual-planta" id="visual-2">🟫</div>
+            <button id="btn-2" onclick="acaoCanteiro(2)">Plantar Cenoura (Custa 10)</button>
+        </div>
+
+        <div class="canteiro" id="canteiro-3">
+            <span class="status-planta" id="status-3">Terra Vazia</span>
+            <div class="visual-planta" id="visual-3">🟫</div>
+            <button id="btn-3" onclick="acaoCanteiro(3)">Plantar Milho (Custa 20)</button>
+        </div>
+    </div>
+
     <script>
-        // Estado do Jogo
+        // Configurações das plantas (Custo, Tempo para crescer em segundos, Valor de venda, emojis)
+        const plantasInfo = {
+            1: { nome: "Tomate", custo: 5, tempo: 3, venda: 12, emojiSemente: "🌱", emojiPronto: "🍅" },
+            2: { nome: "Cenoura", custo: 10, tempo: 6, venda: 25, emojiSemente: "🌱", emojiPronto: "🥕" },
+            3: { nome: "Milho", custo: 20, tempo: 10, venda: 50, emojiSemente: "🌱", emojiPronto: "🌽" }
+        };
+
+        // Estado do jogo
         let moedas = 10;
-        let estoque = 0;
-        let acaoAtual = 'plantar'; // ação padrão inicial
+        let canteiros = {
+            1: { estado: "vazio" }, // vazio, crescendo, pronto
+            2: { estado: "vazio" },
+            3: { estado: "vazio" }
+        };
 
-        // Configuração dos lotes (0 = vazio, 1 = plantado, 2 = regado/crescendo, 3 = pronto)
-        const lotesDados = Array(9).fill(null).map(() => ({ estado: 0, tempo: 0 }));
-
-        // Inicializar a fazenda na tela
-        const fazendaDiv = document.getElementById('fazenda');
-        
-        function criarFazenda() {
-            fazendaDiv.innerHTML = '';
-            lotesDados.forEach((lote, index) => {
-                const loteDiv = document.createElement('div');
-                loteDiv.className = 'lote';
-                loteDiv.onclick = () => clicarLote(index);
-                fazendaDiv.appendChild(loteDiv);
-                atualizarLoteNaTela(index);
-            });
-        }
-
-        // Define qual ferramenta o jogador está usando
-        function setAcao(acao) {
-            acaoAtual = acao;
-            const instrucoes = {
-                'plantar': 'Clique na terra para plantar sementes de trigo (-$2).',
-                'regar': 'Clique nas sementes para regá-las.',
-                'colher': 'Clique nas plantas maduras para colher.'
-            };
-            document.getElementById('instrucao').innerText = instrucoes[acao] || '';
-        }
-
-        // Lógica do clique em cada lote de terra
-        function clicarLote(index) {
-            const lote = lotesDados[index];
-
-            if (acaoAtual === 'plantar' && lote.estado === 0) {
-                if (moedas >= 2) {
-                    moedas -= 2;
-                    lote.estado = 1; // Plantado
-                    atualizarPainel();
-                    atualizarLoteNaTela(index);
-                } else {
-                    alert('Moedas insuficientes para comprar sementes!');
-                }
-            } 
-            else if (acaoAtual === 'regar' && lote.estado === 1) {
-                lote.estado = 2; // Regado / Crescendo
-                atualizarLoteNaTela(index);
+        function atualizarInterface() {
+            document.getElementById("contador-moedas").innerText = moedas;
+            
+            for (let id in canteiros) {
+                let info = plantasInfo[id];
+                let btn = document.getElementById(`btn-${id}`);
                 
-                // Simula o crescimento (3 segundos para crescer)
+                if (canteiros[id].estado === "vazio") {
+                    btn.innerText = `Plantar ${info.nome} (-${info.custo}💰)`;
+                    // Desabilita se o jogador não tiver moedas suficientes
+                    btn.disabled = moedas < info.custo;
+                } else if (canteiros[id].estado === "crescendo") {
+                    btn.innerText = "Crescendo...";
+                    btn.disabled = true;
+                } else if (canteiros[id].estado === "pronto") {
+                    btn.innerText = `Colher e Vender (+${info.venda}💰)`;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function acaoCanteiro(id) {
+            let canteiro = canteiros[id];
+            let info = plantasInfo[id];
+
+            if (canteiro.estado === "vazio" && moedas >= info.custo) {
+                // Comprar e plantar
+                moedas -= info.custo;
+                canteiro.estado = "crescendo";
+                
+                document.getElementById(`status-${id}`).innerText = "Crescendo...";
+                document.getElementById(`visual-${id}`).innerText = info.emojiSemente;
+                atualizarInterface();
+
+                // Simula o tempo de crescimento
                 setTimeout(() => {
-                    if (lote.estado === 2) {
-                        lote.estado = 3; // Pronto para colheita
-                        atualizarLoteNaTela(index);
-                    }
-                }, 3000);
-            } 
-            else if (acaoAtual === 'colher' && lote.estado === 3) {
-                lote.estado = 0; // Volta a ficar vazio
-                estoque += 1;
-                atualizarPainel();
-                atualizarLoteNaTela(index);
+                    canteiro.estado = "pronto";
+                    document.getElementById(`status-${id}`).innerText = "Pronto!";
+                    document.getElementById(`visual-${id}`).innerText = info.emojiPronto;
+                    atualizarInterface();
+                }, info.tempo * 1000);
+
+            } else if (canteiro.estado === "pronto") {
+                // Colher e ganhar moedas
+                moedas += info.venda;
+                canteiro.estado = "vazio";
+                
+                document.getElementById(`status-${id}`).innerText = "Terra Vazia";
+                document.getElementById(`visual-${id}`).innerText = "🟫";
+                atualizarInterface();
             }
         }
 
-        // Atualiza o visual do lote baseado no estado atual
-        function atualizarLoteNaTela(index) {
-            const loteDiv = fazendaDiv.children[index];
-            const lote = lotesDados[index];
-
-            if (lote.estado === 0) {
-                loteDiv.innerHTML = '<span class="emoji">🟫</span><span class="status-texto">Vazio</span>';
-                loteDiv.style.backgroundColor = '#6d4c41';
-            } else if (lote.estado === 1) {
-                loteDiv.innerHTML = '<span class="emoji">🌱</span><span class="status-texto">Seco</span>';
-                loteDiv.style.backgroundColor = '#a1887f';
-            } else if (lote.estado === 2) {
-                loteDiv.innerHTML = '<span class="emoji">🌿</span><span class="status-texto">Crescendo...</span>';
-                loteDiv.style.backgroundColor = '#5d4037';
-            } else if (lote.estado === 3) {
-                loteDiv.innerHTML = '<span class="emoji">🌾</span><span class="status-texto">Pronto!</span>';
-                loteDiv.style.backgroundColor = '#4caf50';
-            }
-        }
-
-        // Vender o estoque acumulado
-        function venderTudo() {
-            if (estoque > 0) {
-                moedas += estoque * 5;
-                estoque = 0;
-                atualizarPainel();
-            } else {
-                alert('Você não tem colheitas no estoque para vender!');
-            }
-        }
-
-        // Atualiza os textos de moedas e estoque
-        function atualizarPainel() {
-            document.getElementById('txt-moedas').innerText = moedas;
-            document.getElementById('txt-estoque').innerText = estoque;
-        }
-
-        // Iniciar o jogo
-        criarFazenda();
-        setAcao('plantar');
+        // Inicializa a interface na primeira execução
+        atualizarInterface();
     </script>
 </body>
 </html>
